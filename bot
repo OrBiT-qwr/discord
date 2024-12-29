@@ -1,0 +1,87 @@
+import discord
+from discord.ext import commands
+import random,requests
+
+
+intents = discord.Intents.default()
+intents.members = True
+intents.message_content = True
+
+
+import os
+print(os.listdir('images'))
+
+
+bot = commands.Bot(command_prefix='!', intents=intents)
+
+@bot.event
+async def on_ready():
+    print(f'Logged in as {bot.user} (ID: {bot.user.id})')
+    print('Бот готов к работе')
+
+
+@bot.command()
+async def hello(ctx):
+    await ctx.send('И тебе привет человек!')
+
+
+@bot.command()
+async def add(ctx, left: int, right: int):
+    """Adds two numbers together."""
+    await ctx.send(left + right)
+
+
+
+@bot.command()
+async def repeat(ctx, times: int, content='repeating...'):
+    """Repeats a message multiple times."""
+    for i in range(times):
+        await ctx.send(content)
+
+
+
+@bot.command()
+async def mem(ctx):
+    with open('images/mem1.jpg', 'rb') as f:
+        # В переменную кладем файл, который преобразуется в файл библиотеки Discord!
+        picture = discord.File(f)
+   # Можем передавать файл как параметр!
+    await ctx.send(file=picture)
+@bot.command()
+async def memz(ctx):
+    img_name = random.choice(os.listdir('images'))
+    with open(f'images/{img_name}', 'rb') as f:
+        # В переменную кладем файл, который преобразуется в файл библиотеки Discord!
+        picture = discord.File(f)
+   # Можем передавать файл как параметр!
+    await ctx.send(file=picture)
+
+def get_duck_image_url():    
+    url = 'https://random-d.uk/api/random'
+    res = requests.get(url)
+    data = res.json()
+    return data['url']
+
+
+@bot.command('duck')
+async def duck(ctx):
+    '''По команде duck вызывает функцию get_duck_image_url'''
+    image_url = get_duck_image_url()
+    await ctx.send(image_url)   
+
+def get_dog_image_url():    
+    url = 'https://random.dog/woof.json'
+    res = requests.get(url)
+    data = res.json()
+    return data['url']
+
+
+@bot.command('dog')
+async def dog(ctx):
+    '''По команде duck вызывает функцию get_duck_image_url'''
+    image_url = get_dog_image_url()
+    await ctx.send(image_url)  
+
+
+
+bot.run('')
